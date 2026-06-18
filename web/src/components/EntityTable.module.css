@@ -1,0 +1,32 @@
+.buttonsWrapper {
+  @media (min-width: $mantine-breakpoint-sm) {
+    display: flex;
+    gap: var(--mantine-spacing-md);
+  }
+
+  @media (width < $mantine-breakpoint-sm) {
+    display: grid;
+    gap: var(--mantine-spacing-sm);
+  }
+
+  @media (min-width: $mantine-breakpoint-xs) and (width < $mantine-breakpoint-sm) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (width < $mantine-breakpoint-xs) {
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+@media (width < $mantine-breakpoint-sm) {
+  .createButton,
+  .deleteButton {
+    width: 100%;
+  }
+}
+
+@media (min-width: $mantine-breakpoint-sm) {
+  .createButton {
+    margin-left: auto;
+  }
+}

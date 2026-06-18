@@ -1,0 +1,23 @@
+.tdCol {
+  --table-width: calc(99vw - 4 * var(--app-shell-padding));
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    max-width: calc(
+      ((48rem - 1vw) - 4 * var(--app-shell-padding)) *
+      var(--column-percentage)
+    );
+    width: max-content;
+  }
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    max-width: calc(var(--table-width) * var(--column-percentage, 0.2));
+    width: fit-content;
+  }
+
+  display: block;
+}
+
+.application {
+  /* Should match with the 'width' property for column in EndpointTable.jsx */
+  --column-percentage: 0.4;
+}

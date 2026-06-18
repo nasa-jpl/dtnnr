@@ -1,0 +1,87 @@
+services:
+  db:
+    image: postgres:18.3-trixie
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_DB
+      - POSTGRES_USER
+    env_file:
+      - .env
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    secrets:
+      - db_password
+
+  api:
+    build:
+      context: ./api
+      target: production
+    restart: always
+    environment:
+      - DATABASE_PASSWORD_FILE=/run/secrets/db_password
+      - SECRET_KEY_FILE=/run/secrets/api_secret_key
+      - PAGE_TOKEN_KEY_FILE=/run/secrets/page_token_key
+      - DATABASE_HOSTNAME=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${POSTGRES_USER}
+      - DATABASE_NAME=${DATABASE_NAME}
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    secrets:
+      - db_password
+      - api_secret_key
+      - page_token_key
+
+  web:
+    build:
+      context: ./web
+      target: production
+    restart: always
+    environment:
+      - OPENAPI_SERVER_URL=${OPENAPI_SERVER_URL:-/api}
+    ports:
+      - 8000:8000
+    depends_on:
+      - api
+    healthcheck:
+      test: curl --silent --fail localhost:8000/health-check || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  api_secret_key:
+    file: ./secrets/api_secret_key.txt
+  page_token_key:
+    file: ./secrets/page_token_key.txt
+
+volumes:
+  db-data:

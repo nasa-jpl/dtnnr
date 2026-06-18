@@ -1,0 +1,145 @@
+@media (width < $mantine-breakpoint-xs) {
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: $mantine-breakpoint-xs) {
+  .wrapper {
+    display: grid;
+    grid-template-columns: 1fr min-content 1fr;
+    grid-template-rows: auto;
+    align-items: center;
+    column-gap: rem(5px);
+  }
+
+  .opLabel {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .op {
+    display: grid;
+    grid-column: 1;
+    grid-row: 2;
+    grid-template-rows: subgrid;
+  }
+
+  .boundsLabelDesc {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .bounds {
+    display: grid;
+    grid-column: 3;
+    grid-row: 2;
+    grid-template-rows: subgrid;
+  }
+
+  .lowerLabelDesc {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+  }
+
+  .lower {
+    display: grid;
+    grid-column: 1;
+    grid-row: 4 / 6;
+    grid-template-rows: subgrid;
+  }
+
+  .upperLabelDesc {
+    grid-column: 3;
+    grid-row: 3;
+    align-self: end;
+  }
+
+  .upper {
+    display: grid;
+    grid-column: 3;
+    grid-row: 4 / 6;
+    grid-template-rows: subgrid;
+  }
+
+  .submit {
+    grid-column: 1 / 4;
+    grid-row: 6;
+  }
+}
+
+/*
+min-width is shorthand for `width >=`, so when this condition is true, the
+above query's condition is true too.
+*/
+@media (min-width: $mantine-breakpoint-sm) {
+  .wrapper {
+    grid-template-columns: repeat(5, minmax(min-content, max-content));
+    column-gap: rem(10px);
+  }
+
+  .boundsLabelDesc {
+    grid-column: 2;
+  }
+
+  .bounds {
+    grid-column: 2;
+  }
+
+  .lowerLabelDesc {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .lower {
+    grid-column: 3;
+    grid-row: 2 / 4;
+  }
+
+  .upperLabelDesc {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .upper {
+    grid-column: 4;
+    grid-row: 2 / 4;
+  }
+
+  .submit {
+    grid-column: 5;
+    grid-row: 2;
+    align-self: center;
+  }
+
+  .empty {
+    grid-column: 5;
+    grid-row: 3;
+  }
+}
+
+@media (width < $mantine-breakpoint-sm) {
+  .empty {
+    grid-column: 2;
+    grid-row: 5;
+    width: min-content;
+    font-size: var(--mantine-spacing-xs);
+  }
+}
+
+.inputWrapper {
+  /*
+  Line numbering restarts inside the subgrid, so even though the components are
+  on different rows in the parent grid, the input wrapper is always on the first
+  row of the nested grid.
+  grid-row and align-self don't do anything when width < $mantine-breakpoint-xs.
+  */
+  grid-row: 1;
+  align-self: center;
+  --input-margin-top: calc(var(--mantine-spacing-xs) / 2);
+  --input-margin-bottom: calc(var(--mantine-spacing-xs) / 2);
+}

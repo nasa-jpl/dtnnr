@@ -1,0 +1,23 @@
+.optionContainer {
+  display: flex;
+  gap: var(--mantine-spacing-md);
+}
+
+.optionIcon {
+  flex: 0 0 auto;
+}
+
+.optionValue,
+.optionLabel {
+  --text-fz: var(--mantine-font-size-sm);
+  --text-lh: var(--mantine-line-height-sm);
+}
+
+.optionValue {
+  flex: 0 0 auto;
+  color: var(--mantine-color-dimmed);
+}
+
+.optionLabel {
+  flex: 2 0rem;
+}

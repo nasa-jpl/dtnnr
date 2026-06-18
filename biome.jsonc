@@ -1,0 +1,20 @@
+{
+  "files": {
+    "includes": ["**", "!**/*routeTree.gen.ts", "!api/"]
+  },
+  "formatter": {
+    "indentStyle": "space"
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "useConst": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single"
+    }
+  }
+}

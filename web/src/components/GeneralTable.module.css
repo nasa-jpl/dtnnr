@@ -1,0 +1,5 @@
+.hostColumn,
+.operatorColumn {
+  /* Should match with the 'width' property for column in GeneralTable.jsx */
+  --column-percentage: 0.26;
+}

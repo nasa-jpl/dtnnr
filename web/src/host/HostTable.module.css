@@ -1,0 +1,5 @@
+.hostNameColumn,
+.operatorColumn {
+  /* Should match with the 'width' property for column in HostTable.jsx */
+  --column-percentage: 0.13;
+}

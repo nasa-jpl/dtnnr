@@ -1,0 +1,19 @@
+.itemContainer {
+  display: flex;
+  max-width: 100%;
+}
+
+.phoneNumberText {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.preferredText {
+  display: flex;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+}

@@ -1,0 +1,24 @@
+services:
+  api:
+    build:
+      context: ./api
+      target: development
+    restart: no
+    environment:
+      - ALLOWED_CORS_ORIGIN=${ALLOWED_CORS_ORIGIN:-http://localhost:5173}
+    ports:
+      - 5000:5000
+    volumes:
+      - ./api:/home/app
+      - /home/app/.venv
+
+  web:
+    build:
+      context: ./web
+      target: development
+    restart: no
+    ports:
+      - 5173:5173
+    volumes:
+      - ./web:/app
+      - /app/node_modules

@@ -1,0 +1,47 @@
+{
+  "name": "dtnnr-web",
+  "version": "0.5.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@mantine/core": "^8.3.18",
+    "@mantine/form": "^8.3.18",
+    "@mantine/hooks": "^8.3.18",
+    "@mantine/notifications": "^8.3.18",
+    "@tabler/icons-react": "^3.41.1",
+    "@tanstack/react-query": "^5.99.0",
+    "@tanstack/react-query-devtools": "^5.99.0",
+    "@tanstack/react-router": "^1.168.22",
+    "@tanstack/react-router-devtools": "^1.166.13",
+    "awesome-phonenumber": "^7.8.0",
+    "mantine-datatable": "^8.3.13",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "zustand": "^5.0.13"
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "servce": "vite preview"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@tanstack/router-plugin": "^1.167.22",
+    "@vitejs/plugin-react": "^6.0.1",
+    "postcss": "^8.5.13",
+    "postcss-preset-mantine": "1.18",
+    "postcss-simple-vars": "^7.0.1",
+    "vite": "^8.0.10"
+  }
+}

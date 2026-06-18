@@ -1,0 +1,70 @@
+.show-white-space {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.app-shell-main {
+  max-width: 2560px;
+  margin: auto;
+}
+
+/*
+DataTable columns' `width` property as a percentage is weird when the viewport
+is small (columns are too small and makes it hard to read long text) or when
+the text is long (`width` property doesn't restrict the width of the <td> so
+the column grows in width).
+So we use a constant max-width when viewport is small (here, smaller than
+mantine-breakpoint-xl), and when viewport is large, we calc() a max-width with
+a given percentage.
+*/
+.td-string-col {
+  @media (max-width: $mantine-breakpoint-xl) {
+    max-width: calc(
+      (
+        (88rem - 1vw) -
+        2 *
+        var(--app-shell-padding) -
+        var(--tabs-width) -
+        var(--grid-gap)
+      ) *
+      var(--column-percentage)
+    );
+  }
+
+  @media (min-width: $mantine-breakpoint-xl) {
+    max-width: calc(var(--panel-width) * var(--column-percentage, 0.2));
+  }
+
+  width: max-content;
+  display: block;
+}
+
+.scale-table-icons svg {
+  width: rem(14);
+  height: rem(14);
+}
+
+.mantine-datatable-empty-state-icon svg {
+  width: rem(24);
+  height: rem(24);
+}
+
+.icon-20-px {
+  width: rem(20);
+  height: rem(20);
+}
+
+.icon-18-px {
+  width: rem(18);
+  height: rem(18);
+}
+
+.icon-16-px {
+  width: rem(16);
+  height: rem(16);
+}
+
+.icon-14-px {
+  width: rem(14);
+  height: rem(14);
+}

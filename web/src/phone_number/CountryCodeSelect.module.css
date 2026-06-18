@@ -1,0 +1,12 @@
+.optionContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+}
+
+.icon {
+  width: calc(0.75rem * var(--mantine-scale));
+  height: calc(0.75rem * var(--mantine-scale));
+}

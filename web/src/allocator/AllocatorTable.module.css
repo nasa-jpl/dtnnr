@@ -1,0 +1,4 @@
+.nameColumn {
+  /* Should match with the 'width' property for column in AllocatorTable.jsx */
+  --column-percentage: 0.35;
+}

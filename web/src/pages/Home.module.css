@@ -1,0 +1,62 @@
+.homeWrapper {
+  /* 100vw is buggy b/c of vertical scrollbar, so use 99vw as a workaround */
+  --home-wrapper-width: calc(min(99vw, 2560px) - 2 * var(--app-shell-padding));
+  --tabs-width: 6.25rem;
+  --grid-gap: 1rem;
+  display: grid;
+  gap: var(--grid-gap);
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    grid-template-columns: min-content 1fr;
+  }
+}
+
+.tabsContainer {
+  /* Show tabs horizontally when viewport smaller than breakpoint-sm */
+  @media (max-width: $mantine-breakpoint-sm) {
+    width: calc(var(--home-wrapper-width));
+  }
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    --offset: calc(
+      var(--app-shell-header-offset, 0rem) +
+      var(--app-shell-padding)
+    );
+    top: var(--offset);
+    height: calc(100vh - var(--offset) - var(--app-shell-padding));
+    width: var(--tabs-width);
+    position: sticky;
+  }
+}
+
+.tabsContainer button {
+  &[data-active] {
+    z-index: 1;
+    background-color: var(--mantine-primary-color-light);
+    color: var(--mantine-primary-color-light-color);
+
+    @mixin hover {
+      background-color: var(--mantine-primary-color-light-hover);
+    }
+  }
+}
+
+.tabsList {
+  flex-wrap: nowrap;
+}
+
+.homePanel {
+  @media (max-width: $mantine-breakpoint-sm) {
+    --panel-width: calc(var(--home-wrapper-width));
+  }
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    --panel-width: calc(
+      var(--home-wrapper-width) -
+      var(--tabs-width) -
+      var(--grid-gap)
+    );
+  }
+
+  max-width: var(--panel-width);
+}

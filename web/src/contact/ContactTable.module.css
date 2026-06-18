@@ -1,0 +1,30 @@
+.tdCol {
+  --table-width: calc(99vw - 4 * var(--app-shell-padding));
+
+  @media (max-width: $mantine-breakpoint-md) {
+    max-width: calc(
+      ((62rem - 1vw) - 4 * var(--app-shell-padding)) *
+      var(--column-percentage)
+    );
+  }
+
+  @media (min-width: $mantine-breakpoint-md) {
+    max-width: calc(var(--table-width) * var(--column-percentage, 0.2));
+  }
+
+  width: max-content;
+  display: block;
+}
+
+.name {
+  /* Should match with the 'width' property for column in ContactTable.jsx */
+  --column-percentage: 0.3;
+}
+
+.email {
+  --column-percentage: 0.35;
+}
+
+.phoneNumbers {
+  --column-percentage: 0.2;
+}
