@@ -22,7 +22,9 @@ available convergence layer protocols, and underlying link information.
 
 ## Setup
 
-To run using the Compose file, create a directory with three files:
+To run using the Compose file,
+create the `secrets/` directory in the same directory where the Compose file is
+with three files:
 
 ```
 secrets
@@ -31,9 +33,28 @@ secrets
 └── page_token_key.txt
 ```
 
+All three files are required.
+`db_password.txt` cannot be empty.
 The content of `page_token_key.txt` must be 32 base64url-encoded bytes.
 
-The environment also needs to have the following variables defined:
+An appropriate API key can be created by running the following command
+in the root of the source tree:
+```
+python -c "import secrets; print(secrets.token_urlsafe())" \
+    >secrets/api_secret_key.txt
+```
+
+An appropriate page token key can be created by running the following command
+in the root of the source tree:
+```
+uv run --project api/ \
+    python -c "from cryptography.fernet import Fernet; \
+print(Fernet.generate_key().decode())" \
+    >secrets/page_token_key.txt
+```
+
+An `.env` file in the same directory as the Compose file
+must also exist with the following variables defined:
 
 * `POSTGRES_DB`
 * `POSTGRES_USER`
