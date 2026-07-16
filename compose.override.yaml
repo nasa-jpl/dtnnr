@@ -16,8 +16,10 @@ services:
     build:
       context: ./web
       target: development
+    image: dtnnr-web:dev
+    pull_policy: build
     restart: no
-    ports:
+    ports: !override
       - 5173:5173
     volumes:
       - ./web:/app
