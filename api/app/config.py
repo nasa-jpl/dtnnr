@@ -100,7 +100,7 @@ ALEMBIC_INI_PATH = get_config(
     default=f'{pathlib.Path(__file__).parent.resolve().parent}/alembic.ini',
 )
 
-ALLOWED_CORS_ORIGIN: list[str] | str = get_config('ALLOWED_CORS_ORIGIN')
+ALLOWED_CORS_ORIGIN: list[str] | str | None = get_config('ALLOWED_CORS_ORIGIN', None)
 # https://github.com/litestar-org/litestar-fullstack/blob/e4dd330917e3c500e73f68a6b4f9d1d2f71cc75f/src/app/config/base.py#L409
 # Check if the ALLOWED_CORS_ORIGINS is a string.
 if isinstance(ALLOWED_CORS_ORIGIN, str):
@@ -117,7 +117,10 @@ if isinstance(ALLOWED_CORS_ORIGIN, str):
         # Split the string by commas into a list if it is not meant to be a list
         # representation.
         ALLOWED_CORS_ORIGIN = [host.strip() for host in ALLOWED_CORS_ORIGIN.split(',')]
-cors_config = CORSConfig(allow_origins=ALLOWED_CORS_ORIGIN)
+if ALLOWED_CORS_ORIGIN is not None:
+    cors_config = CORSConfig(allow_origins=ALLOWED_CORS_ORIGIN)
+else:
+    cors_config = None
 
 compress_config = CompressionConfig(backend='gzip', gzip_compress_level=9)
 
