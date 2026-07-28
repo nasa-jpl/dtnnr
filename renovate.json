@@ -1,0 +1,158 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    "helpers:pinGitHubActionDigests",
+    ":configMigration",
+    ":pinDevDependencies",
+    "abandonments:recommended",
+    ":maintainLockFilesWeekly"
+  ],
+  "baseBranchPatterns": [
+    "integration"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "*"
+      ],
+      "labels": [
+        "dependencies"
+      ]
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "GitHub Actions Dependencies",
+      "commitMessagePrefix": "chore(actions):"
+    },
+    {
+      "matchDepNames": [
+        "renovate",
+        "Checkmarx/kics",
+        "perl"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "GitHub Actions Dependencies",
+      "commitMessagePrefix": "chore(actions):"
+    },
+    {
+      "matchDepNames": [
+        "actions/runner",
+        "actions/runner-container-hook"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "GitHub Runner Core Dependencies",
+      "commitMessagePrefix": "chore(runner):"
+    },
+    {
+      "matchDepNames": [
+        "moby/moby",
+        "docker/compose",
+        "Yelp/dumb-init"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "Container Ecosystem Tools",
+      "commitMessagePrefix": "chore(docker):"
+    },
+    {
+      "matchManagers": [
+        "pip_requirements"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "Python Environment Tools",
+      "commitMessagePrefix": "chore(python):"
+    },
+    {
+      "matchDepNames": [
+        "python",
+        "pyenv/pyenv"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "Python Environment Tools",
+      "commitMessagePrefix": "chore(python):"
+    },
+    {
+      "matchDepNames": [
+        "python"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "matchDepNames": [
+        "oraclelinux",
+        "ubuntu",
+        "/ubi/",
+        "/rhel/"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "matchDepNames": [
+        "actions/actions-runner-controller",
+        "gha-runner-scale-set-controller",
+        "gha-runner-scale-set"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "ARC Infrastructure",
+      "commitMessagePrefix": "chore(arc):"
+    },
+    {
+      "matchManagers": [
+        "helmv3",
+        "dockerfile"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "ARC Infrastructure",
+      "commitMessagePrefix": "chore(arc):"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)Makefile$/",
+        "/(^|/|\\.)Dockerfile$/",
+        "/\\.dockerfile$/",
+        "/\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*\\r?\\n(?:[A-Za-z0-9_\\-]+(?:\\s*\\??=|:)\\s*)\"?(?<currentValue>[^\"\\s\\n]+)\"?"
+      ]
+    }
+  ]
+}
