@@ -924,7 +924,7 @@ def _handle_validation_exception(
                 ' the node identified by `node_id`.<br />'
                 '<br />'
                 'Multiple objects in the request body with the same Service Number'
-                ' value will fail.'
+                ' are allowed. The last object for each Service Number is used.'
             ),
             required=True,
         )
@@ -933,9 +933,8 @@ def _handle_validation_exception(
     responses={
         400: create_400_response_spec(
             description=(
-                'Bad request syntax, validation error, FQNN of a `uri` does'
-                ' not match that of the node, or multiple objects in the'
-                ' request body have the same Service Number value'
+                'Bad request syntax, validation error, or FQNN of a `uri` does'
+                ' not match that of the node'
             ),
             client_error_detail_example=(
                 'Fully Qualified Node Number of ipn:974994.15532.61152 does not'
@@ -969,61 +968,33 @@ def replace_endpoints_ipn(
     node_id: Annotated[int, NodeIDParam],
     data: Annotated[list[EndpointIPNReplaceSchema], EndpointIPNReplaceBody],
 ) -> None:
-    # Map service numbers to a list of array indices and whether a uri is present
-    seen_service_numbers: dict[int, list[tuple[int, bool]]] = dict()
-    at_least_one_service_nbr_seen_more_than_once = False
-    # Map FQNN to uri and array index
-    seen_fqnn: dict[tuple[int, int], tuple[str, int]] = dict()
-
-    for endpoint, i in zip(data, range(len(data))):
+    # Validate every item, then retain the final item for each service number.
+    # Keep its original index so any FQNN error points to the effective item.
+    endpoints_by_service_number: dict[int, tuple[int, EndpointIPNReplaceSchema]] = {}
+    for i, endpoint in enumerate(data):
         endpoint.validate(i)
-        if endpoint.service_number in seen_service_numbers:
-            seen_service_numbers[endpoint.service_number].append(
-                (i, bool(endpoint.uri))
-            )
-            at_least_one_service_nbr_seen_more_than_once = True
-        else:
-            seen_service_numbers[endpoint.service_number] = [(i, bool(endpoint.uri))]
-        # Keep track of the first uri and index for a FQNN
-        if endpoint.uri is not None:
-            (allocator_id, node_number, _) = parse_ipn_uri(endpoint.uri)
-            if (allocator_id, node_number) not in seen_fqnn:
-                seen_fqnn[(allocator_id, node_number)] = (endpoint.uri, i)
+        endpoints_by_service_number[endpoint.service_number] = (i, endpoint)
 
-    # Returning multiple indices at once is nicer for the UI, though the UI
-    # should be able to verify before making a PUT request.
-    if at_least_one_service_nbr_seen_more_than_once:
-        # This could be a ValidationException, but I'd rather just have the docs
-        # say you can't repeat service numbers than try to make an OpenAPI schema
-        # that says that.
-        raise ClientException(
-            detail='Service numbers are repeated across objects in the request body',
-            extra={
-                'extra': [
-                    ProblemDetailsExtraSchema(
-                        message=f'Service number {s_n} appears in multiple objects',
-                        key=f'[{i}].{"uri" if uri else "service_number"}',
-                        source=ExtraSourceEnum.BODY.value,
-                    )
-                    for i, uri in arr
-                ]
-                for s_n, arr in seen_service_numbers.items()
-            },
-        )
+    retained_endpoints = sorted(
+        endpoints_by_service_number.values(), key=lambda item: item[0]
+    )
 
     node = get(db_session, node_id)
     if node is None:
         raise NotFoundException(f'Node ID {node_id} does not exist')
 
-    for (allocator_id, node_number), (uri, index) in seen_fqnn.items():
+    for index, endpoint in retained_endpoints:
+        if endpoint.uri is None:
+            continue
+        allocator_id, node_number, _ = parse_ipn_uri(endpoint.uri)
         if allocator_id != node.allocator_id or node_number != node.node_number:
             raise ClientException(
-                f'Fully Qualified Node Number of {uri} does not match that of node'
+                f'Fully Qualified Node Number of {endpoint.uri} does not match that of node'
                 f' ID {node_id} ({node.allocator_id}, {node.node_number})',
                 extra={
                     'extra': [
                         ProblemDetailsExtraSchema(
-                            message=f'{uri} cannot be associated with the node',
+                            message=f'{endpoint.uri} cannot be associated with the node',
                             key=f'[{index}].uri',
                             source=ExtraSourceEnum.BODY.value,
                         )
@@ -1032,7 +1003,9 @@ def replace_endpoints_ipn(
             )
 
     try:
-        replace_ipn(db_session, node_id, data)
+        replace_ipn(
+            db_session, node_id, [endpoint for _, endpoint in retained_endpoints]
+        )
     except Exception:
         raise InternalServerException
 
@@ -1347,7 +1320,7 @@ def delete_endpoint_ipn(
                 ' Number cannot conflict.<br />'
                 '<br />'
                 'Multiple objects in the request body with the same Group Number'
-                ' value will fail.'
+                ' are allowed. The last object for each Group Number is used.'
             ),
             required=True,
         )
@@ -1355,25 +1328,7 @@ def delete_endpoint_ipn(
     response_description=HTTPStatus(HTTP_204_NO_CONTENT).description,
     responses={
         400: create_400_response_spec(
-            description=(
-                'Bad request syntax, validation error, or multiple objects in'
-                ' the request body have the same Group Number value'
-            ),
-            client_error_detail_example=(
-                'Group numbers are repeated across objects in the request body'
-            ),
-            client_error_extra=[
-                ProblemDetailsExtraSchema(
-                    message='Group number 11 appears in multiple objects',
-                    key='[0].uri',
-                    source='body',
-                ),
-                ProblemDetailsExtraSchema(
-                    message='Group number 11 appears in multiple objects',
-                    key='[1].group_number',
-                    source='body',
-                ),
-            ],
+            description='Bad request syntax or validation error',
             include_validation_error=True,
             validation_detail_example=(
                 f'Validation failed for PUT {API_V1_PATH}/nodes/8/endpoints/imc'
@@ -1395,45 +1350,24 @@ def replace_endpoints_imc(
     node_id: Annotated[int, NodeIDParam],
     data: Annotated[list[EndpointIMCReplaceSchema], EndpointIMCReplaceBody],
 ) -> None:
-    # Map group numbers to a list of array indices and whether a uri is present
-    seen_group_numbers: dict[int, list[tuple[int, bool]]] = dict()
-    at_least_one_group_nbr_seen_more_than_once = False
-
-    for endpoint, i in zip(data, range(len(data))):
+    # Validate every item, then retain the final item for each group number.
+    endpoints_by_group_number: dict[int, tuple[int, EndpointIMCReplaceSchema]] = {}
+    for i, endpoint in enumerate(data):
         endpoint.validate(i)
-        if endpoint.group_number in seen_group_numbers:
-            seen_group_numbers[endpoint.group_number].append((i, bool(endpoint.uri)))
-            at_least_one_group_nbr_seen_more_than_once = True
-        else:
-            seen_group_numbers[endpoint.group_number] = [(i, bool(endpoint.uri))]
+        endpoints_by_group_number[endpoint.group_number] = (i, endpoint)
 
-    # Returning multiple indices at once is nicer for the UI, though the UI
-    # should be able to verify before making a PUT request.
-    if at_least_one_group_nbr_seen_more_than_once:
-        # This could be a ValidationException, but I'd rather just have the docs
-        # say you can't repeat group numbers than try to make an OpenAPI schema
-        # that says that.
-        raise ClientException(
-            detail='Group numbers are repeated across objects in the request body',
-            extra={
-                'extra': [
-                    ProblemDetailsExtraSchema(
-                        message=f'Group number {g_n} appears in multiple objects',
-                        key=f'[{i}].{"uri" if uri else "group_number"}',
-                        source=ExtraSourceEnum.BODY.value,
-                    )
-                    for i, uri in arr
-                ]
-                for g_n, arr in seen_group_numbers.items()
-            },
-        )
+    retained_endpoints = sorted(
+        endpoints_by_group_number.values(), key=lambda item: item[0]
+    )
 
     node = get(db_session, node_id)
     if node is None:
         raise NotFoundException(f'Node ID {node_id} does not exist')
 
     try:
-        replace_imc(db_session, node_id, data)
+        replace_imc(
+            db_session, node_id, [endpoint for _, endpoint in retained_endpoints]
+        )
     except Exception:
         raise InternalServerException
 
