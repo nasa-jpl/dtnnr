@@ -31,6 +31,23 @@ def test_get_link(client: TestClient[Litestar], link: Link):
     assert decoder.decode(response.content) == to_link_schema(link)
 
 
+def test_get_link_includes_service_name_and_abbreviation(
+    client: TestClient[Litestar], link_with_underlying_communication_service: Link
+):
+    link = link_with_underlying_communication_service
+    service = link.underlying_communication_services[0]
+    response = client.get(f'{path_prefix}/{link.link_id}')
+
+    assert response.status_code == 200
+    representation = response.json()['underlying_communication_services'][0]
+    assert representation['underlying_communication_service_name'] == (
+        service.underlying_communication_service_name
+    )
+    assert representation['underlying_communication_service_abbreviation'] == (
+        service.underlying_communication_service_abbreviation
+    )
+
+
 def test_get_link_null_direction(
     client: TestClient[Litestar], link_null_direction: Link
 ):

@@ -94,6 +94,8 @@ Any information not captured by a typed table is handled by
 `link`'s M:N relationship with `underlying_communication_service`.
 Expect to see information like "UDP", "Encapsulation Packet Protocol",
 and "Unified Space Data Link Protocol" in the latter.
+Each service stores both its full `underlying_communication_service_name`
+and a compact `underlying_communication_service_abbreviation` used by the UI.
 
 Note that since CL protocols can be in varying layers in protocol layer stacks,
 expect to see some protocols in `underlying_communication_service` to also appear

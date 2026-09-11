@@ -18,9 +18,9 @@ def query(
     db_session: Session, max_page_size: int, bookmark: str | None
 ) -> Page[Row[Tuple[UnderlyingCommunicationService]]]:
     """Query underlying communication services."""
-    # TODO: support filtering by name
+    # TODO: support filtering by name or abbreviation
     q = select(UnderlyingCommunicationService).order_by(
-        UnderlyingCommunicationService.underlying_communication_service_name,
+        UnderlyingCommunicationService.underlying_communication_service_abbreviation,
         UnderlyingCommunicationService.underlying_communication_service_id,
     )
     return select_page(db_session, q, per_page=max_page_size, page=bookmark)

@@ -14,6 +14,13 @@ def test_query(
 ):
     from app.api.v1.underlying_communication_service.service import query
 
+    first, second = underlying_communication_services
+    first.underlying_communication_service_name = 'Zulu service'
+    first.underlying_communication_service_abbreviation = 'AAA'
+    second.underlying_communication_service_name = 'Alpha service'
+    second.underlying_communication_service_abbreviation = 'ZZZ'
+    session.commit()
+
     t_services = []
     page = query(session, 1, None)
     t_services.extend([_ for (_,) in page])
@@ -21,6 +28,7 @@ def test_query(
         page = query(session, 1, page.paging.bookmark_next)
         t_services.extend([_ for (_,) in page])
 
+    assert t_services.index(first) < t_services.index(second)
     for ucs in underlying_communication_services:
         assert ucs in t_services
 

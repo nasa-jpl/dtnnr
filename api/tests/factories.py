@@ -240,7 +240,10 @@ class UnderlyingCommunicationServiceFactory(BaseFactory):
         model = UnderlyingCommunicationService
 
     underlying_communication_service_name = factory.Sequence(
-        lambda n: f'underlying_communication_service{n}'
+        lambda n: f'Underlying Communication Service {n}'
+    )
+    underlying_communication_service_abbreviation = factory.Sequence(
+        lambda n: f'UCS-{n}'
     )
 
 
