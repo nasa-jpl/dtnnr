@@ -29,7 +29,7 @@ export function LinkTable({ hostId }) {
             !underlying_communication_services
               ? ''
               : underlying_communication_services
-                  .map((s) => s.underlying_communication_service_name)
+                  .map((s) => s.underlying_communication_service_abbreviation)
                   .join(', '),
         },
         {

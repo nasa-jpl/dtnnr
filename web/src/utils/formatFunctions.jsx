@@ -87,7 +87,7 @@ export function formatUnderlyingCommService(ucs) {
   }
   return formatDataForSelect(
     ucs.underlying_communication_service_id,
-    ucs.underlying_communication_service_name,
+    ucs.underlying_communication_service_abbreviation,
   );
 }
 
@@ -104,7 +104,7 @@ export function formatLinkForTable(l) {
   let ucs = [];
   if (l?.underlying_communication_services?.length !== 0) {
     ucs = l.underlying_communication_services.map(
-      (s) => s.underlying_communication_service_name,
+      (s) => s.underlying_communication_service_abbreviation,
     );
   }
   let ucsString = '';

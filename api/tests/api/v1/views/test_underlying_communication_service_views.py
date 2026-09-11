@@ -28,7 +28,14 @@ def test_query_underlying_communication_services(
 ):
     items = collect_paginated_data(client, path_prefix, MAX_PAGE_SIZE)
     for s in underlying_communication_services:
-        assert to_schema(s).to_dict() in items
+        representation = to_schema(s).to_dict()
+        assert representation in items
+        assert representation['underlying_communication_service_name'] == (
+            s.underlying_communication_service_name
+        )
+        assert representation['underlying_communication_service_abbreviation'] == (
+            s.underlying_communication_service_abbreviation
+        )
 
 
 def test_query_underlying_communication_services_pagination(

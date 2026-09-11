@@ -674,6 +674,9 @@ class UnderlyingCommunicationService(Base):
         Integer, Identity(always=True), primary_key=True
     )
     underlying_communication_service_name: Mapped[str] = mapped_column(Text, index=True)
+    underlying_communication_service_abbreviation: Mapped[str] = mapped_column(
+        Text, index=True
+    )
 
     # Database doesn't allow underlying communication service records to be
     # deleted if they're still used by a link record.
@@ -690,41 +693,95 @@ class UnderlyingCommunicationService(Base):
             'UnderlyingCommunicationService(underlying_communication_service_id='
             f'{self.underlying_communication_service_id!r},'
             ' underlying_communication_service_name='
-            f'{self.underlying_communication_service_name!r})'
+            f'{self.underlying_communication_service_name!r},'
+            ' underlying_communication_service_abbreviation='
+            f'{self.underlying_communication_service_abbreviation!r})'
         )
 
 
 default_underlying_communication_services = [
-    {'underlying_communication_service_name': 'USLP'},
-    {'underlying_communication_service_name': 'TM (Data Link)'},
     {
-        'underlying_communication_service_name': (
+        'underlying_communication_service_name': 'Unified Space Data Link Protocol',
+        'underlying_communication_service_abbreviation': 'USLP',
+    },
+    {
+        'underlying_communication_service_name': 'TM Space Data Link Protocol',
+        'underlying_communication_service_abbreviation': 'TM (Data Link)',
+    },
+    {
+        'underlying_communication_service_name': 'TM Synchronization and Channel Coding',
+        'underlying_communication_service_abbreviation': (
             'TM (Synchronization and Channel Coding)'
-        )
+        ),
     },
-    {'underlying_communication_service_name': 'TC (Data Link)'},
     {
-        'underlying_communication_service_name': (
+        'underlying_communication_service_name': 'TC Space Data Link Protocol',
+        'underlying_communication_service_abbreviation': 'TC (Data Link)',
+    },
+    {
+        'underlying_communication_service_name': 'TC Synchronization and Channel Coding',
+        'underlying_communication_service_abbreviation': (
             'TC (Synchronization and Channel Coding)'
-        )
+        ),
     },
-    {'underlying_communication_service_name': 'AOS'},
-    {'underlying_communication_service_name': 'Prox-1 (Data Link)'},
+    {
+        'underlying_communication_service_name': 'AOS Space Data Link Protocol',
+        'underlying_communication_service_abbreviation': 'AOS',
+    },
     {
         'underlying_communication_service_name': (
-            'Prox-1 (Synchronization and Channel Coding)'
-        )
+            'Proximity-1 Space Link Protocol—Data Link Layer'
+        ),
+        'underlying_communication_service_abbreviation': 'Prox-1 (Data Link)',
     },
-    {'underlying_communication_service_name': 'Ethernet'},
-    {'underlying_communication_service_name': 'Optical'},
-    {'underlying_communication_service_name': 'SpaceWire'},
-    {'underlying_communication_service_name': 'Serial'},
-    {'underlying_communication_service_name': 'UART'},
-    # TODO: might rename these to Space / Encapsulation Packet Protocol
-    {'underlying_communication_service_name': 'SPP'},
-    {'underlying_communication_service_name': 'EPP'},
-    {'underlying_communication_service_name': 'UDP'},
-    {'underlying_communication_service_name': 'DCCP'},
+    {
+        'underlying_communication_service_name': (
+            'Proximity-1 Space Link Protocol—Coding and Synchronization Sublayer'
+        ),
+        'underlying_communication_service_abbreviation': (
+            'Prox-1 (Synchronization and Channel Coding)'
+        ),
+    },
+    {
+        'underlying_communication_service_name': 'Ethernet',
+        'underlying_communication_service_abbreviation': 'Ethernet',
+    },
+    {
+        'underlying_communication_service_name': 'Optical',
+        'underlying_communication_service_abbreviation': 'Optical',
+    },
+    {
+        'underlying_communication_service_name': 'SpaceWire',
+        'underlying_communication_service_abbreviation': 'SpaceWire',
+    },
+    {
+        'underlying_communication_service_name': 'Serial',
+        'underlying_communication_service_abbreviation': 'Serial',
+    },
+    {
+        'underlying_communication_service_name': (
+            'Universal Asynchronous Receiver-Transmitter'
+        ),
+        'underlying_communication_service_abbreviation': 'UART',
+    },
+    {
+        'underlying_communication_service_name': 'Space Packet Protocol',
+        'underlying_communication_service_abbreviation': 'SPP',
+    },
+    {
+        'underlying_communication_service_name': 'Encapsulation Packet Protocol',
+        'underlying_communication_service_abbreviation': 'EPP',
+    },
+    {
+        'underlying_communication_service_name': 'User Datagram Protocol',
+        'underlying_communication_service_abbreviation': 'UDP',
+    },
+    {
+        'underlying_communication_service_name': (
+            'Datagram Congestion Control Protocol'
+        ),
+        'underlying_communication_service_abbreviation': 'DCCP',
+    },
 ]
 
 
@@ -970,7 +1027,10 @@ class Link(Base):
             secondary=underlying_communication_service_link,
             back_populates='links',
             passive_deletes=True,
-            order_by=UnderlyingCommunicationService.underlying_communication_service_name,
+            order_by=(
+                UnderlyingCommunicationService.underlying_communication_service_abbreviation,
+                UnderlyingCommunicationService.underlying_communication_service_id,
+            ),
         )
     )
 

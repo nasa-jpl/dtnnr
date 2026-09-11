@@ -31,6 +31,9 @@ def to_underlying_communication_service_schema(
             service.underlying_communication_service_id
         ),
         underlying_communication_service_name=service.underlying_communication_service_name,
+        underlying_communication_service_abbreviation=(
+            service.underlying_communication_service_abbreviation
+        ),
     )
 
 
@@ -55,6 +58,17 @@ class UnderlyingCommunicationServiceSchema(BaseStruct):
                 'Name of some technology or service used at the data link layer'
                 ' or lower'
             ),
+            examples=['Unified Space Data Link Protocol'],
+        ),
+    ]
+    underlying_communication_service_abbreviation: Annotated[
+        str,
+        Meta(
+            title='Underlying Communication Service Abbreviation',
+            description=(
+                'Short label for a technology or service used at the data link'
+                ' layer or lower'
+            ),
             examples=['USLP'],
         ),
     ]
@@ -66,6 +80,9 @@ class UnderlyingCommunicationServiceFieldsEnum(str, Enum):
     ALL = FIELDS_ALL
     UNDERLYING_COMMUNICATION_SERVICE_ID = 'underlying_communication_service_id'
     UNDERLYING_COMMUNICATION_SERVICE_NAME = 'underlying_communication_service_name'
+    UNDERLYING_COMMUNICATION_SERVICE_ABBREVIATION = (
+        'underlying_communication_service_abbreviation'
+    )
 
 
 class UnderlyingCommunicationServiceQueryRequest(QueryRequest):
