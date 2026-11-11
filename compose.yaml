@@ -38,6 +38,7 @@ services:
       - DATABASE_PORT=5432
       - DATABASE_USER=${POSTGRES_USER}
       - DATABASE_NAME=${DATABASE_NAME}
+      - OPENAPI_SERVER_URL=${OPENAPI_SERVER_URL:-/api}
     env_file:
       - .env
     depends_on:
