@@ -1883,25 +1883,27 @@ def test_replace_endpoints_ipn_validation(client: TestClient[Litestar]):
     assert response.json()['extra'][0]['message'] == f'Expected `int` <= {NODE_ID_MAX}'
 
 
-def test_replace_endpoints_ipn_repeat_service_numbers(client: TestClient[Litestar]):
+def test_replace_endpoints_ipn_repeat_service_numbers(
+    client: TestClient[Litestar], node: Node, session: Session
+):
     response = client.put(
-        f'{path_prefix}/0/endpoints/ipn',
-        json=[{'uri': 'ipn:1.2.3'}, {'service_number': 3}],
+        f'{path_prefix}/{node.node_id}/endpoints/ipn',
+        json=[
+            {
+                'uri': f'ipn:{node.allocator_id}.{node.node_number}.3',
+                'application': 'foo',
+                'disposition': 'q',
+            },
+            {'service_number': 4},
+            {'service_number': 3, 'application': 'bar', 'disposition': 'x'},
+        ],
     )
-    assert response.status_code == 400
-    assert response.json()['detail'] == (
-        'Service numbers are repeated across objects in the request body'
-    )
-    assert response.json()['extra'][0]['message'] == (
-        'Service number 3 appears in multiple objects'
-    )
-    assert response.json()['extra'][0]['key'] == '[0].uri'
-    assert response.json()['extra'][0]['source'] == 'body'
-    assert response.json()['extra'][1]['message'] == (
-        'Service number 3 appears in multiple objects'
-    )
-    assert response.json()['extra'][1]['key'] == '[1].service_number'
-    assert response.json()['extra'][1]['source'] == 'body'
+    assert response.status_code == 204
+    session.refresh(node)
+    assert len(node.ipn_endpoints) == 2
+    endpoint = next(e for e in node.ipn_endpoints if e.service_number == 3)
+    assert endpoint.application == 'bar'
+    assert endpoint.disposition == 'x'
 
 
 def test_replace_endpoints_ipn_not_found(client: TestClient[Litestar], node: Node):
@@ -2674,25 +2676,23 @@ def test_replace_endpoints_imc_validation(client: TestClient[Litestar]):
     assert response.json()['extra'][0]['message'] == f'Expected `int` <= {NODE_ID_MAX}'
 
 
-def test_replace_endpoints_imc_repeat_group_numbers(client: TestClient[Litestar]):
+def test_replace_endpoints_imc_repeat_group_numbers(
+    client: TestClient[Litestar], node: Node, session: Session
+):
     response = client.put(
-        f'{path_prefix}/0/endpoints/imc',
-        json=[{'uri': 'imc:3.0'}, {'group_number': 3}],
+        f'{path_prefix}/{node.node_id}/endpoints/imc',
+        json=[
+            {'uri': 'imc:3.0', 'application': 'foo', 'disposition': 'q'},
+            {'group_number': 4},
+            {'group_number': 3, 'application': 'bar', 'disposition': 'x'},
+        ],
     )
-    assert response.status_code == 400
-    assert response.json()['detail'] == (
-        'Group numbers are repeated across objects in the request body'
-    )
-    assert response.json()['extra'][0]['message'] == (
-        'Group number 3 appears in multiple objects'
-    )
-    assert response.json()['extra'][0]['key'] == '[0].uri'
-    assert response.json()['extra'][0]['source'] == 'body'
-    assert response.json()['extra'][1]['message'] == (
-        'Group number 3 appears in multiple objects'
-    )
-    assert response.json()['extra'][1]['key'] == '[1].group_number'
-    assert response.json()['extra'][1]['source'] == 'body'
+    assert response.status_code == 204
+    session.refresh(node)
+    assert len(node.imc_endpoints) == 2
+    endpoint = next(e for e in node.imc_endpoints if e.group_number == 3)
+    assert endpoint.application == 'bar'
+    assert endpoint.disposition == 'x'
 
 
 def test_replace_endpoints_imc_not_found(client: TestClient[Litestar], node: Node):
